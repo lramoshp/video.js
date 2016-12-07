@@ -865,7 +865,6 @@ class Player extends Component {
       TechComponent = Component.getComponent(techName);
     }
     this.tech_ = new TechComponent(techOptions);
-    (this.middleware_ = this.middleware_ || []).push(this.tech_);
 
     // player.triggerReady is always async, so don't need this to be async
     this.tech_.ready(Fn.bind(this, this.handleTechReady_), true);
@@ -1535,7 +1534,7 @@ class Player extends Component {
   techCall_(method, arg) {
     // If it's not ready yet, call method when it is
     if (method in middleware.allowedSetters) {
-      return middleware.set(this.middleware_, method, arg);
+      return middleware.set(this.middleware_, this.tech_, method, arg);
     }
 
     if (this.tech_ && !this.tech_.isReady_) {
@@ -1572,7 +1571,7 @@ class Player extends Component {
     if (this.tech_ && this.tech_.isReady_) {
 
       if (method in middleware.allowedGetters) {
-        return middleware.get(this.middleware_, method);
+        return middleware.get(this.middleware_, this.tech_, method);
       }
 
       // Flash likes to die and reload when you hide or reposition it.
@@ -2431,7 +2430,6 @@ class Player extends Component {
       }
 
       middleware.setTech(mws, this.tech_);
-      this.middleware_.push(this.tech_);
     });
 
     return this;
